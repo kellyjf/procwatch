@@ -1,4 +1,4 @@
 #!/bin/bash
 
-automake --foriegn -c -a 
+automake --foreign -c -a 
 autoreconf -i
