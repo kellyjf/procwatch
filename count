@@ -2,14 +2,18 @@
 
 file=${1:-/dev/null}
 forks=/tmp/tmp-$file
+grep FORK $file > $forks
+
+cut -f 5- $forks |sort | uniq -c | sort -n
 
 grep FORK  $file > $forks
 start=$(head -1 $forks | cut -f 1)
 end=$(tail -1 $forks | cut -f 1)
 count=$(wc -l $forks| cut -d " "  -f 1)
 
-echo 5 k $count $end $start - / p q  
 rate=$( echo 5 k $count $end $start - / p q | dc ) 
-echo $rate
+
+echo
+echo $rate forks per second
 
 
