@@ -3,8 +3,8 @@
 drop table if exists process;
 
 create table process (
- 	start_time   timestamp,
- 	end_time   timestamp,
+ 	start_time   timestamptz,
+ 	end_time   timestamptz,
 	pid        integer,
 	ppid       integer,
 	comm       varchar(512),
