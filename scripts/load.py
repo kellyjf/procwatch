@@ -36,6 +36,7 @@ if __name__ == "__main__":
 					ppid=int(ppid)
 
 					# Insert a process
+					cur.execute("update process set comm=%s where pid=%s and comm IS NULL and end_time IS NULL", [pcmd,ppid])
 					cur.execute("insert into process (start_time, pid, ppid) values (%s, %s, %s)", [start,pid,ppid])
 
 				if 'EXEC' in flds[1]:
