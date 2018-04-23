@@ -1,0 +1,16 @@
+.deps/
+COPYING
+INSTALL
+Makefile
+Makefile.in
+aclocal.m4
+autom4te.cache/
+config.log
+config.status
+configure
+depcomp
+install-sh
+main.o
+missing
+nlproc
+scripts/proc9.txt
