@@ -7,9 +7,9 @@ create table process (
  	end_time   timestamptz,
 	pid        integer,
 	ppid       integer,
-	comm       varchar(512),
 	retval     integer,
 	signal     integer,
+	comm       varchar(512),
 	primary key (start_time,pid)
 );
 
