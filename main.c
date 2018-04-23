@@ -117,15 +117,16 @@ int handle(sock) {
 								int c;
 								for(c=0; c<bytes; c++) {
 									if (path[c]== 0x00) path[c]=' ';
+									if (path[c]== '\n') path[c]='\\';
 								}
 								if(c<sizeof(path)) path[c]='\0';
-								printf("\t%s", path);
 							}
 							close(fd);
 						} else {
-							printf("\t?");
+							path[0] = '\0';
 							perror(path);
 						}
+						printf("\t%s",path);
 					}
 					printf("\n");
 					break;
@@ -135,19 +136,7 @@ int handle(sock) {
 						int fd;
 						int bytes;
 						char path[512];
-
-						sprintf(path,"/proc/%d/ns/net",ev->event_data.exec.process_pid);
-						if ((bytes=readlink(path, path, sizeof(path)))>0) {
-							int c;
-							for(c=0; c<bytes; c++) {
-								if (path[c]== 0x00) path[c]=' ';
-							}
-							if(c<sizeof(path)) path[c]='\0';
-							printf("\t%s", path);
-						} else {
-							printf("\t?");
-							perror(path);
-						}
+						char netns[32];
 
 						sprintf(path,"/proc/%d/cmdline",ev->event_data.exec.process_pid);
 						if ((fd=open(path, O_RDONLY))>0) {
@@ -156,15 +145,29 @@ int handle(sock) {
 								int c;
 								for(c=0; c<bytes; c++) {
 									if (path[c]== 0x00) path[c]=' ';
+									if (path[c]== '\n') path[c]='\\';
 								}
 								if(c<sizeof(path)) path[c]='\0';
-								printf("\t%s", path);
 							}
 							close(fd);
 						} else {
-							printf("\t?");
+							path[0]='\0';
 							perror(path);
 						}
+
+						sprintf(netns,"/proc/%d/ns/net",ev->event_data.exec.process_pid);
+						if ((bytes=readlink(netns, netns, sizeof(netns)))>0) {
+							int c;
+							for(c=0; c<bytes; c++) {
+								if (netns[c]== 0x00) netns[c]=' ';
+							}
+							if(c<sizeof(netns)) netns[c]='\0';
+						} else {
+							netns[0]='\0';
+							perror(netns);
+						}
+
+						printf("\t%s\t%s", netns,path);
 					}
 					printf("\n");
 					break;
