@@ -35,7 +35,7 @@ if __name__ == "__main__":
 							pcmd=flds[4]
 						else:
 							pcmd=""
-						start=dt.fromtimestamp(int(epoch),zone)
+						start=dt.fromtimestamp(float(epoch),zone)
 						pid=int(pid)
 						ppid=int(ppid)
 
@@ -50,14 +50,14 @@ if __name__ == "__main__":
 							pcmd=flds[4]
 						else:
 							pcmd=""
-						etime=dt.fromtimestamp(int(epoch),zone)
+						etime=dt.fromtimestamp(float(epoch),zone)
 						pid=int(pid)
 						cur.execute("update process set comm=%s where pid=%s and end_time IS NULL", [pcmd, pid])
 
 					if 'EXIT' in flds[1]:
 						if len(flds)>4:
 							(epoch,sys,pid,ret,sig)=flds[0:5]
-						end_time=dt.fromtimestamp(int(epoch),zone)
+						end_time=dt.fromtimestamp(float(epoch),zone)
 						pid=int(pid)
 						ret=int(ret)
 						sig=int(sig)
@@ -66,4 +66,4 @@ if __name__ == "__main__":
 				except Exception as e:
 					print "ERROR ON LINE ",num,":", line
 					raise(e)
-			conn.commit()
+	conn.commit()

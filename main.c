@@ -13,8 +13,8 @@
 #include <string.h>
 #include <stdio.h>
 
-// For time
-#include <time.h>
+// For gettimeofday
+#include <sys/time.h>
 
 // For O_RDONLY
 #include <fcntl.h>
@@ -72,9 +72,9 @@ int handle(sock) {
 	char           buf[PAGE_SIZE];
 	struct msghdr  hdr;
 	int            len;
-	time_t         now;
+	struct timeval tv;
 
-	time(&now);
+	gettimeofday(&tv, NULL);
 
 	memset(&hdr, 0 , sizeof(hdr));
 	// Remote size addr
@@ -102,8 +102,8 @@ int handle(sock) {
 //				printf("WHAT: %08x\n",ev->what);
 				switch (ev->what) {
 				case PROC_EVENT_FORK:
-					printf("%u\tFORK\t%d\t%d", 
-						now,
+					printf("%u.%06u\tFORK\t%d\t%d", 
+						tv.tv_sec, tv.tv_usec,
 						ev->event_data.fork.parent_pid,
 						ev->event_data.fork.child_pid);
 					{
@@ -131,7 +131,9 @@ int handle(sock) {
 					printf("\n");
 					break;
 				case PROC_EVENT_EXEC:
-					printf("%u\tEXEC\t%d", now, ev->event_data.exec.process_pid);
+					printf("%u.%06u\tEXEC\t%d",
+						tv.tv_sec, tv.tv_usec,
+						ev->event_data.exec.process_pid);
 					{
 						int fd;
 						int bytes;
@@ -174,7 +176,8 @@ int handle(sock) {
 				case PROC_EVENT_EXIT:
 					{
 						unsigned int rc = ev->event_data.exit.exit_code;
-						printf("%u\tEXIT\t%d\t%d\t%d\n",  now,
+						printf("%u.%06u\tEXIT\t%d\t%d\t%d\n",
+							tv.tv_sec, tv.tv_usec,
 							ev->event_data.exit.process_pid,
 							(rc>>8),
 							(rc & 0xff));
