@@ -198,12 +198,40 @@ int handle(sock) {
 
 	return(len);
 }
+
+int bootdata () {
+	
+	FILE *fp;
+	char  buf[128];
+
+	if ((fp=fopen("/proc/sys/kernel/random/boot_id","r"))==NULL) {
+		perror("boot_id");
+	} else {
+		fgets(buf,sizeof(buf),fp);
+		printf("BOOT\t%s",buf);
+	}
+	fclose(fp);
+	if ((fp=popen("wtf","r"))==NULL) {
+		perror("boot_id");
+	} else {
+		while(fgets(buf,sizeof(buf),fp)) {
+			printf("WTF\t%s",buf);
+		}
+	}
+	fclose(fp);
+
+
+}
+
+
+
 int main (int argc, char **argv) {
 
 	int          sock;
 	nla          addr;	
 	int          cnt;
 
+	bootdata();
  
 	// Open a netlink socket
 	sock = socket(PF_NETLINK, SOCK_DGRAM|SOCK_CLOEXEC, NETLINK_CONNECTOR);
