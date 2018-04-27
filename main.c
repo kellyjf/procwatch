@@ -15,6 +15,7 @@
 
 // For gettimeofday
 #include <sys/time.h>
+#include <time.h>
 
 // For O_RDONLY
 #include <fcntl.h>
@@ -73,8 +74,11 @@ int handle(sock) {
 	struct msghdr  hdr;
 	int            len;
 	struct timeval tv;
+	struct timespec monotime;
+	struct timespec realtime;
 
-	gettimeofday(&tv, NULL);
+	clock_gettime(CLOCK_REALTIME, &realtime);
+	clock_gettime(CLOCK_MONOTONIC, &monotime);
 
 	memset(&hdr, 0 , sizeof(hdr));
 	// Remote size addr
@@ -102,60 +106,22 @@ int handle(sock) {
 //				printf("WHAT: %08x\n",ev->what);
 				switch (ev->what) {
 				case PROC_EVENT_FORK:
-					printf("%u.%06u\tFORK\t%d\t%d", 
-						tv.tv_sec, tv.tv_usec,
+					printf("%u.%09u\t%u.%09u\tFORK\t%d\t%d", 
+						monotime.tv_sec, monotime.tv_nsec,
+						realtime.tv_sec, realtime.tv_nsec,
 						ev->event_data.fork.parent_pid,
 						ev->event_data.fork.child_pid);
-					{
-						int fd;
-						char path[512];
-						sprintf(path,"/proc/%d/cmdline",ev->event_data.fork.parent_pid);
-						if ((fd=open(path, O_RDONLY))>0) {
-							int bytes;
-							bytes=read(fd, path, sizeof(path)-1);
-							if(bytes>0) {
-								int c;
-								for(c=0; c<bytes; c++) {
-									if (path[c]== 0x00) path[c]=' ';
-									if (path[c]== '\n') path[c]='\\';
-								}
-								if(c<sizeof(path)) path[c]='\0';
-							}
-							close(fd);
-						} else {
-							path[0] = '\0';
-							perror(path);
-						}
-						printf("\t%s",path);
-					}
 					printf("\n");
 					break;
 				case PROC_EVENT_EXEC:
-					printf("%u.%06u\tEXEC\t%d",
-						tv.tv_sec, tv.tv_usec,
+					printf("%u.%09u\t%u.%09u\tEXEC\t%d",
+						monotime.tv_sec, monotime.tv_nsec,
+						realtime.tv_sec, realtime.tv_nsec,
 						ev->event_data.exec.process_pid);
 					{
 						int fd;
 						int bytes;
-						char path[512];
 						char netns[32];
-
-						sprintf(path,"/proc/%d/cmdline",ev->event_data.exec.process_pid);
-						if ((fd=open(path, O_RDONLY))>0) {
-							bytes=read(fd, path, sizeof(path)-1);
-							if(bytes>0) {
-								int c;
-								for(c=0; c<bytes; c++) {
-									if (path[c]== 0x00) path[c]=' ';
-									if (path[c]== '\n') path[c]='\\';
-								}
-								if(c<sizeof(path)) path[c]='\0';
-							}
-							close(fd);
-						} else {
-							path[0]='\0';
-							perror(path);
-						}
 
 						sprintf(netns,"/proc/%d/ns/net",ev->event_data.exec.process_pid);
 						if ((bytes=readlink(netns, netns, sizeof(netns)))>0) {
@@ -169,15 +135,16 @@ int handle(sock) {
 							perror(netns);
 						}
 
-						printf("\t%s\t%s", netns,path);
+						printf("\t%s", netns);
 					}
 					printf("\n");
 					break;
 				case PROC_EVENT_EXIT:
 					{
 						unsigned int rc = ev->event_data.exit.exit_code;
-						printf("%u.%06u\tEXIT\t%d\t%d\t%d\n",
-							tv.tv_sec, tv.tv_usec,
+						printf("%u.%09u\t%u.%09u\tEXIT\t%d\t%d\t%d\n",
+							monotime.tv_sec, monotime.tv_nsec,
+							realtime.tv_sec, realtime.tv_nsec,
 							ev->event_data.exit.process_pid,
 							(rc>>8),
 							(rc & 0xff));
