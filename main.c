@@ -178,6 +178,14 @@ int bootdata () {
 		printf("BOOT\t%s",buf);
 	}
 	fclose(fp);
+	if ((fp=popen("hostname","r"))==NULL) {
+		perror("hostname");
+	} else {
+		while(fgets(buf,sizeof(buf),fp)) {
+			printf("HOSTNAME\t%s",buf);
+		}
+	}
+	fclose(fp);
 	if(0){
 		if ((fp=popen("wtf","r"))==NULL) {
 			perror("boot_id");
