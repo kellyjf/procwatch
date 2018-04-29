@@ -1,0 +1,3 @@
+#!/bin/bash
+
+sadf -U $1 --  -q | awk 'NR==1{begin=$3}$5=="ldavg-1"{print $3-begin,$6}'

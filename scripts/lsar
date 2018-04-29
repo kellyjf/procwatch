@@ -1,0 +1,7 @@
+#!/bin/bash
+
+ls -1rt sardat* | while read f; do
+	size=$(stat -c '%s' $f)
+	mod="$(stat -c '%y' $f)"
+	printf "%10.10s %19.19s %s\n" $size "${mod:0:19}" $f
+done
