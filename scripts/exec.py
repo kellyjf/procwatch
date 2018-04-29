@@ -30,7 +30,7 @@ if __name__ == "__main__":
 					(mtime,pid,ppid)=flds[0:3]
 					pid=int(pid)
 					ppid=int(ppid)
-					comm=" ".join(flds[3:])
+					comm=" ".join(flds[3:])[:512]
 
 					cur.execute("update process set mtimeft=%s, comm=%s where pid=%s and ppid=%s", [mtime,comm, pid, ppid])
 
