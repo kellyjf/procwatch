@@ -178,14 +178,16 @@ int bootdata () {
 		printf("BOOT\t%s",buf);
 	}
 	fclose(fp);
-	if ((fp=popen("wtf","r"))==NULL) {
-		perror("boot_id");
-	} else {
-		while(fgets(buf,sizeof(buf),fp)) {
-			printf("WTF\t%s",buf);
+	if(0){
+		if ((fp=popen("wtf","r"))==NULL) {
+			perror("boot_id");
+		} else {
+			while(fgets(buf,sizeof(buf),fp)) {
+				printf("WTF\t%s",buf);
+			}
 		}
+		fclose(fp);
 	}
-	fclose(fp);
 
 
 }
