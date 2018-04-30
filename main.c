@@ -171,10 +171,19 @@ int bootdata () {
 	FILE *fp;
 	char  buf[128];
 
+	memset(buf, 0, sizeof(buf));
 	if ((fp=fopen("/proc/sys/kernel/random/boot_id","r"))==NULL) {
 		perror("boot_id");
 	} else {
+		char *start, *end;
+
 		fgets(buf,sizeof(buf),fp);
+		for(start=buf,end=buf; *start; start++, end++) {
+			while(*end && *end=='-') { end++ ;}
+			if(end!=start) {
+				*start=*end;
+			}
+		}
 		printf("BOOT\t%s",buf);
 	}
 	fclose(fp);

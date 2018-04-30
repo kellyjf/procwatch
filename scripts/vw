@@ -1,0 +1,21 @@
+#!/usr/bin/python
+
+from dialog import Dialog
+import os
+import sys
+
+def fsize(f):
+	stat=os.stat(f)
+
+choices=[ (f, str(os.stat(f).st_size)) for f in os.listdir(".") if "nlproc" in f]
+
+if choices:
+	d=Dialog()
+	(result,selfile)=d.menu("A Menu",choices=choices)
+	if result=="ok":
+		print selfile
+
+		os.system("psql process < process.sql")
+		os.system("./load.py {}".format(selfile))
+		os.system("./exec.py {}".format(selfile.replace("nlproc","esnoop")))
+
