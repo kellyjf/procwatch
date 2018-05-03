@@ -122,12 +122,14 @@ int handle(sock) {
 						int fd;
 						int bytes;
 						char netns[32];
+						char *name = netns;
 
 						sprintf(netns,"/proc/%d/ns/net",ev->event_data.exec.process_pid);
 						if ((bytes=readlink(netns, netns, sizeof(netns)))>0) {
 							int c;
 							for(c=0; c<bytes; c++) {
-								if (netns[c]== 0x00) netns[c]=' ';
+								if (netns[c]== '[') name=netns+c+1;;
+								if (netns[c]== ']') netns[c]='\0';
 							}
 							if(c<sizeof(netns)) netns[c]='\0';
 						} else {
@@ -135,7 +137,7 @@ int handle(sock) {
 							perror(netns);
 						}
 
-						printf("\t%s", netns);
+						printf("\t%s", name);
 					}
 					printf("\n");
 					break;

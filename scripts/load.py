@@ -16,6 +16,7 @@ if __name__ == "__main__":
 
 
 	conn=pg.connect(dbname="process")
+	conn.set_session(autocommit=False)
 	cur=conn.cursor()
 
 	zone=pytz.timezone("America/Denver")
@@ -45,6 +46,9 @@ if __name__ == "__main__":
 						(mtime,epoch,sys,pid,netns)=flds[0:5]
 						etime=dt.fromtimestamp(float(epoch),zone)
 						pid=int(pid)
+						if not netns:
+							netns="0"
+						netns=int(netns)
 						cur.execute("update process set mtimenl=%s, netns=%s where pid=%s and end_time IS NULL", [mtime,netns, pid])
 
 					if 'EXIT' in flds[2]:

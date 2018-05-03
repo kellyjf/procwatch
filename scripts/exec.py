@@ -14,8 +14,8 @@ if __name__ == "__main__":
 
 
 	conn=pg.connect(dbname="process")
+	conn.set_session(autocommit=False)
 	cur=conn.cursor()
-
 
 	for dat in args.files:
 		with open(dat, "r") as f:

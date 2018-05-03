@@ -8,6 +8,7 @@ def fsize(f):
 	stat=os.stat(f)
 
 choices=[ (f, str(os.stat(f).st_size)) for f in os.listdir(".") if "nlproc" in f]
+choices.sort()
 
 if choices:
 	d=Dialog()
