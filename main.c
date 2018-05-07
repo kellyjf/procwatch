@@ -123,6 +123,7 @@ int handle(sock) {
 						int bytes;
 						char netns[32];
 						char *name = netns;
+						unsigned int nsid = 0;
 
 						sprintf(netns,"/proc/%d/ns/net",ev->event_data.exec.process_pid);
 						if ((bytes=readlink(netns, netns, sizeof(netns)))>0) {
@@ -132,12 +133,13 @@ int handle(sock) {
 								if (netns[c]== ']') netns[c]='\0';
 							}
 							if(c<sizeof(netns)) netns[c]='\0';
+							nsid=strtoul(name,NULL,0);
 						} else {
 							netns[0]='\0';
 							perror(netns);
 						}
 
-						printf("\t%s", name);
+						printf("\t%08X", nsid);
 					}
 					printf("\n");
 					break;
