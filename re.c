@@ -31,6 +31,25 @@ typedef enum {
 	RE_END
 } re_type_t;
 
+enum {
+	COMM_NAME=1,
+	COMM_PID,
+	COMM_TIME,
+	COMM_SUB,
+};
+enum {
+	FORK_PID=1,
+	FORK_COMM,
+	FORK_CHILD_PID,
+	FORK_CHILD_COMM,
+};
+
+enum {
+	EXEC_FILE=1,
+	EXEC_PID,
+	EXEC_OLD_PID,
+};
+
 re_t re[RE_END];
 
 #define RMFIELD(re,fnum,buf)  \
@@ -38,12 +57,30 @@ re_t re[RE_END];
 	(re)->regmatch[fnum].rm_eo-(re)->regmatch[fnum].rm_so, \
 	buf+(re)->regmatch[fnum].rm_so
 
+int  re_handle_fork(re_t *r, char *buf, char *subline) {
+	int    f;
+	printf("%s", r->name);
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
+	printf("\t%*.*s", RMFIELD(r, FORK_CHILD_PID, subline));
+	printf("\t%*.*s", RMFIELD(r, FORK_CHILD_COMM, subline));
+	printf("\n");
+	return 0;
+}
+int  re_handle_exec(re_t *r, char *buf, char *subline) {
+	int    f;
+	printf("%s", r->name);
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
+	printf("\t%*.*s", RMFIELD(r, EXEC_FILE, subline));
+	printf("\n");
+	return 0;
+}
 int  re_handle(re_t *r, char *buf, char *subline) {
 	int    f;
 	printf("%s", r->name);
-	for(f=2; f<=3; f++) {
-		printf("\t%*.*s", RMFIELD(&re[0], f, buf));
-	}
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
 	for(f=1; f<=r->nflds; f++) {
 		printf("\t%*.*s", RMFIELD(r, f, subline));
 	}
@@ -51,12 +88,30 @@ int  re_handle(re_t *r, char *buf, char *subline) {
 	return 0;
 }
 
+int  re_handle_args(re_t *r, char *buf, char *subline) {
+	int    f;
+	printf("%s", r->name);
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
+	for(f=1; f<=r->nflds; f++) {
+		char *fs=subline+r->regmatch[f].rm_so;
+		int   sz=r->regmatch[f].rm_eo-r->regmatch[f].rm_so-2;
+		if( *fs == '"') {
+			(f==1) ? printf("\t") : printf(" ",*fs);
+			printf("%*.*s", sz,sz,fs+1);
+		} else {
+			break;
+		}
+	}
+	printf("\n");
+	return 0;
+}
 re_t re[] = {
 	{ .re="^[ ]*(\\w+)-([0-9]+) \[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$",},
-	{ .re="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$", re_handle, 4, "FORK"},
+	{ .re="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$", re_handle_fork, 4, "FORK"},
 	{ .re="^sched_process_exec: filename=(.+) pid=([0-9]+) old_pid=([0-9]+)(.*)$", re_handle, 3 , "EXEC"},
 	{ .re="^sched_process_exit: comm=(\\w+) pid=([0-9]+) prio=([0-9]+)(.*)$", re_handle, 3, "EXIT"},
-	{ .re="^eprobe_sys_execve: .* arg1=(\\w+) arg2=(\\w+) arg3=(\\w+) arg4=(\\w+) (.*)$",re_handle, 4, "ARGS"},
+	{ .re="^eprobe_sys_execve: .* arg1=*(.+) arg2=(.+) arg3=(.+) arg4=(.+) arg5=(.+) arg6=(.*)$",re_handle_args, 6, "ARGS"},
 	{ .re="^sys_kill\\(pid: (\\w+), sig: (\\w+)(.*)$",re_handle, 2, "KILL"},
 };
 
