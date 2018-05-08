@@ -3,17 +3,75 @@
 #include <regex.h>
 
 
+char *re_common="^[ ]*(\\w+)-([0-9]+) \[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$";
+char *re_fork="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$";
+char *re_exec="^sched_process_fork: filename=(\\w+) pid=([0-9]+) old_pid=([0-9]+)(.*)$";
+char *re_sysexec="^eprobe_sys_execve: (.*) arg1=(\\w+) arg2=(\\w+) (.*)$";
+char *re_exit="^sched_process_exit: comm=(\\w+) pid=([0-9]+) prio=([0-9]+)(.*)$";
+char *re_kill="^sys_kill\\(pid: (\\w+), sig: (\\w+)(.*)$";
+
+typedef struct re_s {
+	char       *re;
+	int         (*handle)(struct re_s *re, char *buf, char *);
+	int         nflds;
+	char       *name;
+	regex_t     regex;
+	regmatch_t  regmatch[8];
+} re_t;
+
+
+
+typedef enum {
+	RE_COMMON = 0,
+	RE_FORK,
+	RE_EXEC,
+	RE_EXIT,
+	RE_PROBE,
+	RE_KILL,
+	RE_END
+} re_type_t;
+
+re_t re[RE_END];
+
+#define RMFIELD(re,fnum,buf)  \
+	(re)->regmatch[fnum].rm_eo-(re)->regmatch[fnum].rm_so, \
+	(re)->regmatch[fnum].rm_eo-(re)->regmatch[fnum].rm_so, \
+	buf+(re)->regmatch[fnum].rm_so
+
+int  re_handle(re_t *r, char *buf, char *subline) {
+	int    f;
+	printf("%s", r->name);
+	for(f=2; f<=3; f++) {
+		printf("\t%*.*s", RMFIELD(&re[0], f, buf));
+	}
+	for(f=1; f<=r->nflds; f++) {
+		printf("\t%*.*s", RMFIELD(r, f, subline));
+	}
+	printf("\n");
+	return 0;
+}
+
+re_t re[] = {
+	{ .re="^[ ]*(\\w+)-([0-9]+) \[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$",},
+	{ .re="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$", re_handle, 4, "FORK"},
+	{ .re="^sched_process_exec: filename=(.+) pid=([0-9]+) old_pid=([0-9]+)(.*)$", re_handle, 3 , "EXEC"},
+	{ .re="^sched_process_exit: comm=(\\w+) pid=([0-9]+) prio=([0-9]+)(.*)$", re_handle, 3, "EXIT"},
+	{ .re="^eprobe_sys_execve: .* arg1=(\\w+) arg2=(\\w+) arg3=(\\w+) arg4=(\\w+) (.*)$",re_handle, 4, "ARGS"},
+	{ .re="^sys_kill\\(pid: (\\w+), sig: (\\w+)(.*)$",re_handle, 2, "KILL"},
+};
+
 int main (int argc, char **argv) {
 
-	regex_t         retrace;
 	int             rc;
 	FILE            *fp;
-	regmatch_t      rematch[32];
 
+	int             ndx;
 
-	rc=regcomp(&retrace, "^\\s*([^-]+)-(\\d+)\\s*\[\\d+\\]\\s*(.{4})", REG_EXTENDED);
-	rc=regcomp(&retrace, "^[ ]*(\\w+)-([0-9]+)\\s+.{4}\+([0-9]+.[0-9]+):\\s+(\\w+):.*$", REG_EXTENDED);
-	printf("%d\n",rc);
+	for(ndx=0; ndx<sizeof(re)/sizeof(re_t); ndx++) {
+		re_t  *elem = re+ndx;
+		rc=regcomp(&re[ndx].regex, re[ndx].re, REG_EXTENDED);
+	}
+
 
 
 	//if ((fp=fopen("/sys/kernel/debug/tracing/trace_pipe","r"))==NULL) {
@@ -23,9 +81,19 @@ int main (int argc, char **argv) {
 	} else {
 		static unsigned char buf[1024];
 		while(fgets(buf,sizeof(buf),fp)) {
-			rc=regexec(&retrace, buf, 32, rematch,0);
+			rc=regexec(&re[RE_COMMON].regex, buf, 8, re[0].regmatch,0);
 			if(rc==0) {
-				printf("rc=%d %s", rc, buf);
+				char *subline = buf+re[0].regmatch[4].rm_so;
+				re_type_t retype;
+
+				for (retype=RE_COMMON+1; retype<RE_END; retype++) {
+					int  ret;
+					re_t *elem = re+retype;
+					ret=regexec(&elem->regex, subline, 8, elem->regmatch,0);
+					if (ret==0)  {
+						if (elem->handle) elem->handle(elem, buf, subline);
+					}	
+				}
 			}
 		}
 		
