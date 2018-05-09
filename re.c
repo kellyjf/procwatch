@@ -130,6 +130,8 @@ int  re_handle_args(re_t *r, char *buf, char *subline) {
 	for(f=1; f<=r->nflds; f++) {
 		char *fs=subline+r->regmatch[f].rm_so;
 		int   sz=r->regmatch[f].rm_eo-r->regmatch[f].rm_so-2;
+		char *p;
+		for(p=fs; p<fs+sz; p++) { if (*p=='\t') *p=' '; }
 		if( *fs == '"') {
 			(f==1) ? printf("\t") : printf(" ",*fs);
 			printf("%*.*s", sz,sz,fs+1);
