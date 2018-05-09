@@ -1,11 +1,11 @@
 
-bin_PROGRAMS = nlproc  db re
+bin_PROGRAMS = nlproc  db fdr
 
 nlproc_SOURCES = main.c
 mono_SOURCES = mono.c
 db_SOURCES = db.c
-re_SOURCES = re.c mono.c
-re_CFLAGS = -g
+fdr_SOURCES = re.c mono.c
+fdr_CFLAGS = -g
 
 db_LDADD = -ldb
 
