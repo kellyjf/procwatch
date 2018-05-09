@@ -5,8 +5,8 @@ D="/sys/kernel/debug/tracing"
 
 eprobe="p:kprobes/eprobe_sys_execve sys_execve arg1=+0(+0(%si)):string arg2=+0(+8(%si)):string arg3=+0(+16(%si)):string arg4=+0(+24(%si)):string arg5=+0(+32(%si)):string arg6=+0(+40(%si)):string"
 
+#signal/signal_generate
 events="
-signal/signal_generate
 syscalls/sys_enter_exit_group
 syscalls/sys_enter_kill
 sched/sched_process_fork
@@ -20,6 +20,7 @@ echo nop > $D/current_tracer
 find $D/events/kprobes/ -name enable | while read k; do echo 0 > $k; done
 echo > $D/kprobe_events
 
+echo 0 > $D/events/enable
 for e in $events; do
 	echo 1 > $D/events/$e/enable
 done
