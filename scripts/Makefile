@@ -4,10 +4,11 @@ reset:
 	psql process < process.sql
 
 
-DATA := $(wildcard nlproc-* esnoop-* sardata-* sysinfo-*)
+#DATA := $(wildcard nlproc-* esnoop-* sardata-* sysinfo-*)
+DATA := $(wildcard re-*  sardata-* sysinfo-*)
 
 fetch:
-	scp -rp atg4g-2-p1:*-* .
+	scp -rp atg4g-2-p1:{re,sys}*-* .
 
 archive:
 	mv -f $(DATA) archives
