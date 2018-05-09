@@ -3,13 +3,6 @@
 #include <regex.h>
 
 
-char *re_common="^[ ]*(\\w+)-([0-9]+) \[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$";
-char *re_fork="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$";
-char *re_exec="^sched_process_fork: filename=(\\w+) pid=([0-9]+) old_pid=([0-9]+)(.*)$";
-char *re_sysexec="^eprobe_sys_execve: (.*) arg1=(\\w+) arg2=(\\w+) (.*)$";
-char *re_exit="^sched_process_exit: comm=(\\w+) pid=([0-9]+) prio=([0-9]+)(.*)$";
-char *re_kill="^sys_kill\\(pid: (\\w+), sig: (\\w+)(.*)$";
-
 typedef struct re_s {
 	char       *re;
 	int         (*handle)(struct re_s *re, char *buf, char *);
@@ -28,6 +21,8 @@ typedef enum {
 	RE_EXIT,
 	RE_PROBE,
 	RE_KILL,
+	RE_SGEN,
+	RE_EGRP,
 	RE_END
 } re_type_t;
 
@@ -107,13 +102,16 @@ int  re_handle_args(re_t *r, char *buf, char *subline) {
 	return 0;
 }
 re_t re[] = {
-	{ .re="^[ ]*(\\w+)-([0-9]+) \[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$",},
-	{ .re="^sched_process_fork: comm=(\\w+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+)(.*)$", re_handle_fork, 4, "FORK"},
-	{ .re="^sched_process_exec: filename=(.+) pid=([0-9]+) old_pid=([0-9]+)(.*)$", re_handle, 3 , "EXEC"},
-	{ .re="^sched_process_exit: comm=(\\w+) pid=([0-9]+) prio=([0-9]+)(.*)$", re_handle, 3, "EXIT"},
+	{ .re="^\\s*(.+)-([0-9]+)\\s+\[[0-9]+]\\s+.{4}\\s+([0-9]+.[0-9]+):\\s*(.*)$",},
+	{ .re="^sched_process_fork: comm=(.+) pid=([0-9]+) child_comm=(\\w+) child_pid=([0-9]+).*$", re_handle_fork, 4, "FORK"},
+	{ .re="^sched_process_exec: filename=(.+) pid=([0-9]+) old_pid=([0-9]+).*$", re_handle, 3 , "EXEC"},
+	{ .re="^sched_process_exit: comm=(.+) pid=([0-9]+) prio=([0-9]+).*$", re_handle, 3, "EXIT"},
 	{ .re="^eprobe_sys_execve: .* arg1=*(.+) arg2=(.+) arg3=(.+) arg4=(.+) arg5=(.+) arg6=(.*)$",re_handle_args, 6, "ARGS"},
-	{ .re="^sys_kill\\(pid: (\\w+), sig: (\\w+)(.*)$",re_handle, 2, "KILL"},
+	{ .re="^sys_kill\\(pid: (\\w+), sig: (\\w+)\\)$",re_handle, 2, "KILL"},
+	{ .re="^signal_generate:.*sig=([0-9]+) errno=([0-9]+) code=([0-9]+) comm=(\\w+) pid=([0-9]+) (.*)$",re_handle, 5, "SGEN"},
+	{ .re="^sys_exit_group\\(error_code:\\s*(.*)\\).*$",re_handle, 1, "EGRP"},
 };
+//	{ .re="^sys_exit_group(error_code:\\s*([0-9a-f]+))\\s*$",re_handle, 1, "EGRP"},
 
 int main (int argc, char **argv) {
 
@@ -125,6 +123,7 @@ int main (int argc, char **argv) {
 	for(ndx=0; ndx<sizeof(re)/sizeof(re_t); ndx++) {
 		re_t  *elem = re+ndx;
 		rc=regcomp(&re[ndx].regex, re[ndx].re, REG_EXTENDED);
+		if (0) printf ("rc=%d %s\n", rc, elem->re);
 	}
 
 
@@ -136,7 +135,8 @@ int main (int argc, char **argv) {
 	} else {
 		static unsigned char buf[1024];
 		while(fgets(buf,sizeof(buf),fp)) {
-			rc=regexec(&re[RE_COMMON].regex, buf, 8, re[0].regmatch,0);
+			rc=regexec(&re[RE_COMMON].regex, buf, 8, re[0].regmatch,0&REG_EXTENDED);
+			if (0) printf("rc=%d %s\n    %s\n",rc, re[RE_COMMON].re, buf);
 			if(rc==0) {
 				char *subline = buf+re[0].regmatch[4].rm_so;
 				re_type_t retype;
@@ -144,7 +144,8 @@ int main (int argc, char **argv) {
 				for (retype=RE_COMMON+1; retype<RE_END; retype++) {
 					int  ret;
 					re_t *elem = re+retype;
-					ret=regexec(&elem->regex, subline, 8, elem->regmatch,0);
+					ret=regexec(&elem->regex, subline, 8, elem->regmatch,0&REG_EXTENDED);
+					if (0) printf("rc=%d %s | [%s] \n", ret, elem->re, subline);
 					if (ret==0)  {
 						if (elem->handle) elem->handle(elem, buf, subline);
 					}	
