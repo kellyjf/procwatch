@@ -154,6 +154,10 @@ re_t re[] = {
 };
 //	{ .re="^sys_exit_group(error_code:\\s*([0-9a-f]+))\\s*$",re_handle, 1, "EGRP"},
 
+
+extern int lruinfo();
+extern int syncline();
+
 int main (int argc, char **argv) {
 
 	int             rc;
@@ -168,6 +172,8 @@ int main (int argc, char **argv) {
 	}
 
 
+	syncline();
+	lruinfo();
 
 	//if ((fp=fopen("/sys/kernel/debug/tracing/trace_pipe","r"))==NULL) {
 	if (argc>1) filename=argv[1];	
