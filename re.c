@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <regex.h>
+#include <errno.h>
 
 int _debug;
 //int _debug = 1;
@@ -145,9 +146,23 @@ int  re_handle(re_t *r, char *buf, char *subline) {
 
 int  re_handle_args(re_t *r, char *buf, char *subline) {
 	int    f;
+	unsigned char filename[32];
+	unsigned char buffer[32];
+	unsigned int netns = 0;
+	int rc;
+
+	memset(buffer, 0, sizeof(buffer));
+	snprintf(filename, sizeof(filename), "/proc/%*.*s/ns/net",  RMFIELD(&re[0], COMM_PID, buf));
+	if ((rc=readlink(filename, buffer, sizeof(buffer)))>0) {
+		netns = strtoul(buffer+5, NULL, 10);
+	} else {
+		netns=0xEEEE0000|errno;
+	}
+	
 	printf("%s", r->name);
 	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
 	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
+	printf("\t%08X", netns);
 	for(f=1; f<=r->nflds; f++) {
 		char *fs=subline+r->regmatch[f].rm_so;
 		int   sz=r->regmatch[f].rm_eo-r->regmatch[f].rm_so-2;

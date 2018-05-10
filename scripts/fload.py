@@ -55,13 +55,13 @@ if __name__ == "__main__":
 						cur.execute("insert into execs (pid, mtime, etime, comm) values (%s, %s, %s, %s)", [pid,mtime,etime,comm])
 
 					if 'ARGS' in flds[0]:
-						[pid,mtime,comm]=flds[1:4]
+						[pid,mtime,netns,comm]=flds[1:5]
 						mtime=float(mtime)
 						pid=int(pid)
 						etime=dt.fromtimestamp(mtime+eboot,zone)
 
 						# Insert a process
-						cur.execute("insert into args (pid, mtime, etime, args) values (%s, %s, %s, %s)", [pid,mtime,etime,comm])
+						cur.execute("insert into args (pid, mtime, etime, netns, args) values (%s, %s, %s,%s, %s)", [pid,mtime,etime,netns,comm])
 
 					if 'EXIT' in flds[0]:
 						[pid,mtime]=flds[1:3]
