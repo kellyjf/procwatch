@@ -83,12 +83,19 @@ enum {
 int  re_handle_signal(re_t *r, char *buf, char *subline) {
 	int    f;
 	unsigned char code[16];
+	int           signum;
+
+	snprintf(code,sizeof(code),"%*.*s", RMFIELD(r, SIG_SIG, subline));
+	signum=atoi(code);
+
+	if (signum==14 || signum==17) return 0;
+
 	printf("%s", r->name);
 	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
 	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
 	printf("\t%*.*s", RMFIELD(r, SIG_SIG, subline));
 	printf("\t%*.*s", RMFIELD(r, SIG_PID, subline));
-	snprintf(code,sizeof(code),"%*.*s", RMFIELD(r, SIG_PID, subline));
+	snprintf(code,sizeof(code),"%*.*s", RMFIELD(r, SIG_COMM, subline));
 	printf("\t%04X", strtoul(code,NULL,0));
 	printf("\n");
 	return 0;
