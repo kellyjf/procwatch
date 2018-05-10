@@ -8,7 +8,7 @@ reset:
 DATA := $(wildcard re-*  sardata-* sysinfo-*)
 
 fetch:
-	scp -rp atg4g-2-p1:{re,sys}*-* .
+	scp -rp atg4g-2-p1:{fdr,sys}*-* .
 
 archive:
 	mv -f $(DATA) archives

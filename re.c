@@ -110,6 +110,20 @@ int  re_handle_kill(re_t *r, char *buf, char *subline) {
 	printf("\n");
 	return 0;
 }
+enum {
+	EGRP_RET=1,
+};
+int  re_handle_egrp(re_t *r, char *buf, char *subline) {
+	int    f;
+	unsigned char code[16];
+	printf("%s", r->name);
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_PID, buf));
+	printf("\t%*.*s", RMFIELD(&re[0], COMM_TIME, buf));
+	snprintf(code,sizeof(code),"0x%*.*s", RMFIELD(r, EGRP_RET, subline));
+	printf("\t%d", strtoul(code,NULL,0));
+	printf("\n");
+	return 0;
+}
 int  re_handle(re_t *r, char *buf, char *subline) {
 	int    f;
 	printf("%s", r->name);
@@ -150,7 +164,7 @@ re_t re[] = {
 	{ .re="^eprobe_sys_execve: .* arg1=*(.+) arg2=(.+) arg3=(.+) arg4=(.+) arg5=(.+) arg6=(.*)\n$",re_handle_args, 6, "ARGS"},
 	{ .re="^sys_kill\\(pid:\\s*(.+),\\s*sig:\\s*(.+)\\).*\n$",re_handle_kill, 2, "KILL"},
 	{ .re="^signal_generate:.*sig=([0-9]+) errno=([0-9]+) code=([0-9]+) comm=(\\w+) pid=([0-9]+) (.*)\n$",re_handle_signal, 5, "SGEN"},
-	{ .re="^sys_exit_group\\(error_code:\\s*(.*)\\).*$",re_handle, 1, "EGRP"},
+	{ .re="^sys_exit_group\\(error_code:\\s*(.*)\\).*$",re_handle_egrp, 1, "EGRP"},
 };
 //	{ .re="^sys_exit_group(error_code:\\s*([0-9a-f]+))\\s*$",re_handle, 1, "EGRP"},
 

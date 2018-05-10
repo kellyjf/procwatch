@@ -8,46 +8,52 @@ drop table if exists kills;
 
 
 create table forks (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
 	comm       varchar(512),
-	ppid       integer,
-	primary key (start_time,pid)
+	cpid       integer,
+	primary key (etime,pid)
 );
 
 create table execs (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
 	comm       varchar(512),
-	primary key (start_time,pid)
+	primary key (etime,pid)
 );
 
 create table args (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
 	args       varchar(512),
-	primary key (start_time,pid)
+	primary key (etime,pid)
 );
 
 create table exits (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
-	primary key (start_time,pid)
+	primary key (etime,pid)
 );
 
 create table egrps (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
-	retval        integer,
-	primary key (start_time,pid)
+	retval     integer,
+	primary key (etime,pid)
 );
 
 create table kills (
+ 	mtime      float,
+ 	etime      timestamptz,
 	pid        integer,
- 	start_time   float,
-	target        integer,
-	signal        integer,
-	primary key (start_time,pid)
+	target     integer,
+	signal     integer,
+	primary key (etime,pid)
 );
 
 
