@@ -5,6 +5,7 @@ drop table if exists args;
 drop table if exists exits;
 drop table if exists egrps;
 drop table if exists kills;
+drop table if exists sgens;
 
 
 create table forks (
@@ -52,8 +53,16 @@ create table kills (
  	etime      timestamptz,
 	pid        integer,
 	target     integer,
+	signal     integer
+);
+
+create table sgens (
+ 	mtime      float,
+ 	etime      timestamptz,
+	pid        integer,
 	signal     integer,
-	primary key (etime,pid)
+	target     integer,
+	code       varchar(8)
 );
 
 

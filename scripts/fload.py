@@ -44,6 +44,8 @@ if __name__ == "__main__":
 						cur.execute("insert into forks (pid, mtime, etime, comm, cpid) values (%s, %s, %s, %s, %s)", [pid,mtime,etime,comm,cpid])
 
 					if 'EXEC' in flds[0]:
+						if len(flds)<5:
+							continue
 						[pid,mtime,comm]=flds[1:4]
 						mtime=float(mtime)
 						pid=int(pid)
@@ -91,6 +93,18 @@ if __name__ == "__main__":
 
 						# Insert a process
 						cur.execute("insert into kills (pid, mtime, etime, target, signal) values (%s, %s, %s, %s, %s)", [pid,mtime,etime,target,signal])
+
+
+					if 'SGEN' in flds[0]:
+						[pid,mtime,signal,target,code]=flds[1:6]
+						mtime=float(mtime)
+						pid=int(pid)
+						target=int(target)
+						signal=int(signal)
+						etime=dt.fromtimestamp(mtime+eboot,zone)
+
+						# Insert a process
+						cur.execute("insert into sgens (pid, mtime, etime, target, signal, code) values (%s, %s, %s, %s, %s, %s)", [pid,mtime,etime,target,signal,code])
 
 
 				except Exception as e:
