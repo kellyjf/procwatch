@@ -44,7 +44,7 @@ if __name__ == "__main__":
 						cur.execute("insert into forks (pid, mtime, etime, comm, cpid) values (%s, %s, %s, %s, %s)", [pid,mtime,etime,comm,cpid])
 
 					if 'EXEC' in flds[0]:
-						if len(flds)<5:
+						if len(flds)<4:
 							continue
 						[pid,mtime,comm]=flds[1:4]
 						mtime=float(mtime)
@@ -110,4 +110,24 @@ if __name__ == "__main__":
 				except Exception as e:
 					print "ERROR ON LINE ",num,":", line
 					raise(e)
+	conn.commit()
+
+	forkmatch='''
+	with parent as (
+		select f.mtime as "ftime", e.mtime, e.pid
+		from args e, forks f
+		where e.pid=f.cpid and f.mtime <e.mtime+10
+	)
+	select max(ftime) as "ftime",mtime,pid 
+	into table eparents 
+	from parent group by 2,3;
+'''
+	print forkmatch
+
+
+	cur.execute("drop table if exists eparents")
+	print "Analyzing"
+	cur.execute(forkmatch)
+	cur.execute("create index par_pid_mtime on eparents(pid,mtime)")
+
 	conn.commit()
