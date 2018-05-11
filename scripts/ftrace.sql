@@ -26,9 +26,11 @@ create table execs (
 );
 
 create table args (
+ 	ftime      float,
  	mtime      float,
  	etime      timestamptz,
 	pid        integer,
+	ppid       integer,
 	netns      varchar(8), 
 	args       varchar(512),
 	primary key (etime,pid)
