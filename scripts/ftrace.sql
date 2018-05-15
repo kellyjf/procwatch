@@ -14,7 +14,7 @@ create table forks (
 	pid        integer,
 	comm       varchar(512),
 	cpid       integer,
-	primary key (etime,pid)
+	primary key (mtime,pid,cpid)
 );
 
 create table execs (
@@ -22,25 +22,30 @@ create table execs (
  	etime      timestamptz,
 	pid        integer,
 	comm       varchar(512),
-	primary key (etime,pid)
+	primary key (mtime,pid)
 );
 
 create table args (
  	ftime      float,
  	mtime      float,
+ 	xtime      float,
  	etime      timestamptz,
 	pid        integer,
 	ppid       integer,
+	retval     integer,
+	signal     integer,
 	netns      varchar(8), 
 	args       varchar(512),
-	primary key (etime,pid)
+	primary key (mtime,pid)
 );
 
 create table exits (
  	mtime      float,
  	etime      timestamptz,
 	pid        integer,
-	primary key (etime,pid)
+	retval     integer,
+	signal     integer,
+	primary key (mtime,pid)
 );
 
 create table egrps (
@@ -48,7 +53,7 @@ create table egrps (
  	etime      timestamptz,
 	pid        integer,
 	retval     integer,
-	primary key (etime,pid)
+	primary key (mtime,pid)
 );
 
 create table kills (

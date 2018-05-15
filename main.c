@@ -77,7 +77,7 @@ int handle(sock) {
 	struct timespec monotime;
 	struct timespec realtime;
 
-	clock_gettime(CLOCK_REALTIME, &realtime);
+//	clock_gettime(CLOCK_REALTIME, &realtime);
 	clock_gettime(CLOCK_MONOTONIC, &monotime);
 
 	memset(&hdr, 0 , sizeof(hdr));
@@ -105,6 +105,7 @@ int handle(sock) {
 				struct proc_event *ev = (struct proc_event *)msg->data;
 //				printf("WHAT: %08x\n",ev->what);
 				switch (ev->what) {
+#ifdef MAXIMAL
 				case PROC_EVENT_FORK:
 					printf("%u.%09u\t%u.%09u\tFORK\t%d\t%d", 
 						monotime.tv_sec, monotime.tv_nsec,
@@ -154,17 +155,28 @@ int handle(sock) {
 							(rc & 0xff));
 					}
 					break;
-				case PROC_EVENT_COMM:
-					//printf("COMM: %s\n", ev->event_data.comm.comm);
+				}
+#endif
+				case PROC_EVENT_FORK:
+					printf("FORK\t%d\t%u.%06u\t\t%d", 
+						ev->event_data.fork.parent_pid,
+						monotime.tv_sec, monotime.tv_nsec,
+						ev->event_data.fork.child_pid);
+					printf("\n");
+					break;
+				case PROC_EVENT_EXIT:
+					{
+						unsigned int rc = ev->event_data.exit.exit_code;
+						printf("EXIT\t%d\t%u.%06u\t%d\t%d\n",
+							ev->event_data.exit.process_pid,
+							monotime.tv_sec, monotime.tv_nsec,
+							(rc>>8),
+							(rc & 0xff));
+					}
 					break;
 				}
 			}
 		}
-		/*
-		write(1, buf, len);
-		write(1, &len, sizeof(len));
-		write(1, "\n\n\n\n", 4);
-		*/
 	}
 
 	return(len);
@@ -214,6 +226,7 @@ int bootdata () {
 }
 
 
+extern int syncline();
 
 int main (int argc, char **argv) {
 
@@ -221,7 +234,8 @@ int main (int argc, char **argv) {
 	nla          addr;	
 	int          cnt;
 
-	bootdata();
+	//bootdata();
+	syncline();
  
 	// Open a netlink socket
 	sock = socket(PF_NETLINK, SOCK_DGRAM|SOCK_CLOEXEC, NETLINK_CONNECTOR);
