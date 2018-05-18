@@ -4,7 +4,6 @@ reset:
 	psql process < process.sql
 
 
-#DATA := $(wildcard nlproc-* esnoop-* sardata-* sysinfo-*)
 DATA := $(wildcard fdr-* nlproc-*  sardata-* sysinfo-*)
 
 fetch:
