@@ -162,16 +162,16 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>mainTable</tabstop>
-  <tabstop>relatedTab</tabstop>
-  <tabstop>parentTable</tabstop>
-  <tabstop>siblingTable</tabstop>
-  <tabstop>childrenTable</tabstop>
+  <tabstop>pidLine</tabstop>
+  <tabstop>netnsCombo</tabstop>
   <tabstop>filterLine</tabstop>
   <tabstop>queryButton</tabstop>
-  <tabstop>netnsCombo</tabstop>
-  <tabstop>pidLine</tabstop>
   <tabstop>clearButton</tabstop>
+  <tabstop>relatedTab</tabstop>
+  <tabstop>parentTable</tabstop>
+  <tabstop>childrenTable</tabstop>
+  <tabstop>mainTable</tabstop>
+  <tabstop>siblingTable</tabstop>
  </tabstops>
  <resources/>
  <connections>

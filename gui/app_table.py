@@ -41,6 +41,7 @@ class DbTable(QTableWidget):
 		
                 self.horizontalHeader().setResizeMode(QHeaderView.ResizeToContents)
                 self.horizontalHeader().setStretchLastSection(True)
+		self.sortItems(0)
 		self.setSortingEnabled(True)
 		super(QTableWidget,self).show()
 	
