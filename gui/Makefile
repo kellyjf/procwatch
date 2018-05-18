@@ -1,6 +1,6 @@
 
 
-UI := ui_settingsdb.py 
+UI := ui_dbsettings.py 
 
 all: test 
 
@@ -13,7 +13,7 @@ clean:
 	rm -f $(UI) *.pyc
 
 test: $(UI)
-	python app_settingsdb.py
+	python app_dbsettings.py
 
 help:
 	echo This is Make Help
