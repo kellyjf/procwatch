@@ -1,6 +1,6 @@
 
 
-UI := ui_dbsettings.py 
+UI := ui_dbsettings.py  ui_procwatch.py
 
 all: test 
 
@@ -13,7 +13,7 @@ clean:
 	rm -f $(UI) *.pyc
 
 test: $(UI)
-	python app_dbsettings.py
+	python app_procwatch.py
 
 help:
 	echo This is Make Help

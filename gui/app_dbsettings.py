@@ -63,10 +63,9 @@ class Database(QObject):
 
 	def execute(self, sql, values=[]):
 		curr=self.conn.cursor()
+#		print "JFK",curr.mogrify(sql, values)
 		curr.execute(sql, values)
-		fields=[x[0] for x in curr.description]
-		ret=[dict(zip(fields, x)) for x in curr]
-		return ret
+		return curr
 
 if __name__ == "__main__":
 	import sys
@@ -76,6 +75,5 @@ if __name__ == "__main__":
 	app = QtGui.QApplication(sys.argv)
 	db=Database()
 	db.connect()	
-	print db.execute("select * from args limit 5")	
 	sys.exit(app.exec_())
 

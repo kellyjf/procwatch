@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Procwatch</class>
+ <widget class="QMainWindow" name="Procwatch">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>Procwatch</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="clearButton">
+        <property name="text">
+         <string>Clear</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>PID</string>
+        </property>
+        <property name="buddy">
+         <cstring>pidLine</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="pidLine"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>NetNS</string>
+        </property>
+        <property name="buddy">
+         <cstring>netnsCombo</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="netnsCombo"/>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Cmd</string>
+        </property>
+        <property name="buddy">
+         <cstring>filterLine</cstring>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="filterLine"/>
+      </item>
+      <item>
+       <widget class="QPushButton" name="queryButton">
+        <property name="text">
+         <string>Query</string>
+        </property>
+        <property name="autoDefault">
+         <bool>true</bool>
+        </property>
+        <property name="default">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="DbTable" name="mainTable"/>
+    </item>
+    <item>
+     <widget class="QTabWidget" name="relatedTab">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="parentTab">
+       <attribute name="title">
+        <string>Parents</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="DbTable" name="parentTable"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="siblingTab">
+       <attribute name="title">
+        <string>Siblings</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="DbTable" name="siblingTable"/>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="childrenTab">
+       <attribute name="title">
+        <string>Children</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <widget class="DbTable" name="childrenTable"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="action_Settings"/>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+   </widget>
+   <addaction name="menu_File"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="action_Settings">
+   <property name="text">
+    <string>&amp;Settings</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>DbTable</class>
+   <extends>QTableWidget</extends>
+   <header>app_table</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>mainTable</tabstop>
+  <tabstop>relatedTab</tabstop>
+  <tabstop>parentTable</tabstop>
+  <tabstop>siblingTable</tabstop>
+  <tabstop>childrenTable</tabstop>
+  <tabstop>filterLine</tabstop>
+  <tabstop>queryButton</tabstop>
+  <tabstop>netnsCombo</tabstop>
+  <tabstop>pidLine</tabstop>
+  <tabstop>clearButton</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>action_Quit</sender>
+   <signal>activated()</signal>
+   <receiver>Procwatch</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>399</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>filterLine</sender>
+   <signal>returnPressed()</signal>
+   <receiver>queryButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>602</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>747</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pidLine</sender>
+   <signal>returnPressed()</signal>
+   <receiver>queryButton</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>226</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>747</x>
+     <y>53</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
