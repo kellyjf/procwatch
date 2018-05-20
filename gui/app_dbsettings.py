@@ -13,6 +13,20 @@ from PyQt4.QtGui import *
 from  ui_dbsettings import *
 import psycopg2 as pg
 
+class CurList(list):
+	def __init__(self):
+		super(list,self).__init__()
+
+	def addrows(self,cursor):
+		for row in cursor:
+			self.append(row)
+
+	def describe(self,description):
+		if not 'description' in self.__dict__:
+			self.description = description
+	def close(self):
+		pass
+
 class DbSettings(QDialog, Ui_DbSettings):
 	def __init__(self,parent=None, settings=None):
 		super(QDialog, self).__init__(parent)
@@ -58,10 +72,17 @@ class Database(QObject):
 		if self.dbsettings.passwordLine.text():
 			connstr=connstr+" password={}".format(self.dbsettings.passwordLine.text())
 
-		self.conn = pg.connect(connstr)
+		try:
+			self.conn = pg.connect(connstr)
+		except Exception as e:
+			self.conn=None
+			self.dbsettings.show()
+
 		return self.conn
 
 	def execute(self, sql, values=[]):
+		if not self.conn:
+			self.connect()
 		curr=self.conn.cursor()
 #		print "JFK",curr.mogrify(sql, values)
 		curr.execute(sql, values)
