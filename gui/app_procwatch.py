@@ -31,10 +31,13 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.metadata()
 	
 	def metadata(self):
-		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) as emin, max(mtime) as mmax, max(etime) as emax from args")
+		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) as emin, max(mtime) as mmax, max(etime) as emax from args")[0]
 		self.nslist=self.db.dictlist("select netns, count(netns) as pop  from args group by 1 order by 1")
 		self.netnsCombo.clear()
 		self.netnsCombo.insertItems(0,[ "{0} {1:5d}".format(x.get('netns'),x.get('pop')) for x in self.nslist])
+
+		self.sinceTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+		self.untilTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
 
 	def query(self):
 		clause=[]
