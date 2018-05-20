@@ -23,10 +23,19 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.db=Database()
 		self.db.connect()	
 
+		
 		self.connect(self.queryButton, SIGNAL("clicked()"), self.query)
 		self.connect(self.action_Settings, SIGNAL("activated()"), self.dbsettings.show)
 		self.connect(self.mainTable, SIGNAL("cellDoubleClicked(int, int)"), self.setpid)
+
+		self.metadata()
 	
+	def metadata(self):
+		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) as emin, max(mtime) as mmax, max(etime) as emax from args")
+		self.nslist=self.db.dictlist("select netns, count(netns) as pop  from args group by 1 order by 1")
+		self.netnsCombo.clear()
+		self.netnsCombo.insertItems(0,[ "{0} {1:5d}".format(x.get('netns'),x.get('pop')) for x in self.nslist])
+
 	def query(self):
 		clause=[]
 		param=[]
@@ -51,17 +60,13 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 	def setpid(self, row, col):
 		item=self.mainTable.item(row,0)
 		if 'userdata' in item.__dict__:
-			if 'ppid' in item.userdata:
-				self.siblingTable.show(self.db.execute(select+" from args where ppid=%s order by mtime", [item.userdata['ppid']]))
-
 			if 'Pid' in item.userdata:
-				#self.childrenTable.show(self.db.execute(select+" from args where ppid=%s", [item.userdata['pid']]))
-#				self.childrenTable.show(self.db.execute("select mtime as \"Boot\", etime::time as \"Time\", pid, cpid from forks where pid=%s order by mtime", [item.userdata['pid']]))
-				ancestors=CurList()
 				pid=int(item.userdata['Pid'])
 				mtime=float(item.userdata['Boot'])
 				ppid=None
 				pmtime=None
+
+				ancestors=CurList()
 				while True:
 					curs=self.db.execute("select \"Boot\", \"Time\", \"Pid\",\"Cpid\",\"Command\" from parents where cpid=%s and mtime-10.0<%s order by mtime desc limit 1", [pid,mtime])
 					ancestors.describe(curs.description)

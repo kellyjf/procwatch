@@ -17,109 +17,171 @@
    <string>Procwatch</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_7">
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="clearButton">
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>PID</string>
+            </property>
+            <property name="buddy">
+             <cstring>pidLine</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="pidLine"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>NetNS</string>
+            </property>
+            <property name="buddy">
+             <cstring>netnsCombo</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="netnsCombo"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Cmd</string>
+            </property>
+            <property name="buddy">
+             <cstring>filterLine</cstring>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="filterLine"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Since:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" rowspan="2">
+           <widget class="QTimeEdit" name="sinceTime">
+            <property name="displayFormat">
+             <string>h:mm:ss AP</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSlider" name="sinceSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" rowspan="2">
+           <widget class="QSlider" name="untilSlider">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Until:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QTimeEdit" name="untilTime">
+            <property name="displayFormat">
+             <string>h:mm:ss AP</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
       </item>
       <item>
-       <widget class="QLabel" name="label">
-        <property name="text">
-         <string>PID</string>
-        </property>
-        <property name="buddy">
-         <cstring>pidLine</cstring>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="pidLine"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>NetNS</string>
-        </property>
-        <property name="buddy">
-         <cstring>netnsCombo</cstring>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="netnsCombo"/>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Cmd</string>
-        </property>
-        <property name="buddy">
-         <cstring>filterLine</cstring>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLineEdit" name="filterLine"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="queryButton">
-        <property name="text">
-         <string>Query</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <widget class="QPushButton" name="clearButton">
+          <property name="text">
+           <string>Clear</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="queryButton">
+          <property name="text">
+           <string>Query</string>
+          </property>
+          <property name="autoDefault">
+           <bool>true</bool>
+          </property>
+          <property name="default">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
     <item>
-     <widget class="DbTable" name="mainTable"/>
-    </item>
-    <item>
-     <widget class="QTabWidget" name="relatedTab">
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="parentTab">
-       <attribute name="title">
-        <string>Parents</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
-        <item>
-         <widget class="DbTable" name="parentTable"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="siblingTab">
-       <attribute name="title">
-        <string>Siblings</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="DbTable" name="siblingTable"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="childrenTab">
-       <attribute name="title">
-        <string>Children</string>
-       </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_4">
-        <item>
-         <widget class="DbTable" name="childrenTable"/>
-        </item>
-       </layout>
-      </widget>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="DbTable" name="parentTable"/>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="relatedTab">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="parentTab">
+         <attribute name="title">
+          <string>Parents</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="DbTable" name="mainTable"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="siblingTab">
+         <attribute name="title">
+          <string>Siblings</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="DbTable" name="siblingTable"/>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="childrenTab">
+         <attribute name="title">
+          <string>Children</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="DbTable" name="childrenTable"/>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -129,13 +191,14 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>28</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="action_Load"/>
     <addaction name="action_Settings"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
@@ -153,6 +216,11 @@
     <string>&amp;Settings</string>
    </property>
   </action>
+  <action name="action_Load">
+   <property name="text">
+    <string>&amp;Load...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -165,12 +233,7 @@
   <tabstop>pidLine</tabstop>
   <tabstop>netnsCombo</tabstop>
   <tabstop>filterLine</tabstop>
-  <tabstop>queryButton</tabstop>
-  <tabstop>clearButton</tabstop>
-  <tabstop>relatedTab</tabstop>
-  <tabstop>parentTable</tabstop>
   <tabstop>childrenTable</tabstop>
-  <tabstop>mainTable</tabstop>
   <tabstop>siblingTable</tabstop>
  </tabstops>
  <resources/>

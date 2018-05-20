@@ -88,6 +88,13 @@ class Database(QObject):
 		curr.execute(sql, values)
 		return curr
 
+	def dictlist(self, sql, values=[]):
+		curr=self.execute(sql,values)
+		fields=[x[0] for x in curr.description]
+		result=[ dict(zip(fields,x)) for x in curr]
+		curr.close()
+		return result
+
 if __name__ == "__main__":
 	import sys
 	import signal
