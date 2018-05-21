@@ -84,7 +84,7 @@ class Database(QObject):
 		if not self.conn:
 			self.connect()
 		curr=self.conn.cursor()
-#		print "JFK",curr.mogrify(sql, values)
+		print "JFK",curr.mogrify(sql, values)
 		curr.execute(sql, values)
 		return curr
 
