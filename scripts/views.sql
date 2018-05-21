@@ -6,7 +6,7 @@ create view commands as
 		to_char(e.pid,'99999') as "Pid",
 		a.netns as "NetNS",
 		case when a.args is null then e.comm else a.args end as "Command",
-		e.mtime, e.pid
+		e.mtime, e.etime,e.pid
 	from execs e left join args a 
 	on a.pid=e.pid and abs(e.mtime-a.mtime)<10 
 	order by 1;

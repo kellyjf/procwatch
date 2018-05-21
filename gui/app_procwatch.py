@@ -12,6 +12,7 @@ from PyQt4.QtGui import *
 
 from app_dbsettings import *
 from ui_procwatch import *
+import pytz
 
 select="select to_char(mtime,'99999D999') as \"Boot\", etime::time as \"Time\", to_char(pid,'99999') as pid, to_char(ppid,'99999') as ppid, netns, args as \"Command\""
 
@@ -31,17 +32,25 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.metadata()
 	
 	def metadata(self):
+		self.db.dictlist("set timezone=\"UTC\"")
 		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) as emin, max(mtime) as mmax, max(etime) as emax from args")[0]
 		self.nslist=self.db.dictlist("select netns, count(netns) as pop  from args group by 1 order by 1")
 		self.netnsCombo.clear()
 		self.netnsCombo.insertItems(0,[ "{0} {1:5d}".format(x.get('netns'),x.get('pop')) for x in self.nslist])
 
 		self.sinceTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+		#self.sinceTime.setDateTime(self.timebox.get('emin'))
 		self.untilTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+		self.untilTime.setDateTime(self.timebox.get('emax'))
 
 	def query(self):
 		clause=[]
 		param=[]
+
+		clause.append("etime between %s and %s")
+		param.extend([
+			pytz.utc.localize(self.sinceTime.dateTime().toPyDateTime()),
+			pytz.utc.localize(self.untilTime.dateTime().toPyDateTime())])
 
 		cmdfilt=self.filterLine.text()
 		if cmdfilt:

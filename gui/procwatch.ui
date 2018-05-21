@@ -80,7 +80,7 @@
              <string>hh:mm:ss</string>
             </property>
             <property name="timeSpec">
-             <enum>Qt::UTC</enum>
+             <enum>Qt::LocalTime</enum>
             </property>
            </widget>
           </item>
@@ -111,7 +111,7 @@
              <string>hh:mm:ss</string>
             </property>
             <property name="timeSpec">
-             <enum>Qt::UTC</enum>
+             <enum>Qt::LocalTime</enum>
             </property>
            </widget>
           </item>
