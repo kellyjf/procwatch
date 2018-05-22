@@ -20,6 +20,11 @@
 // For O_RDONLY
 #include <fcntl.h>
 
+// For RT
+#include <sched.h>
+
+
+
 #define PAGE_SIZE 4096
 
 
@@ -233,6 +238,11 @@ int main (int argc, char **argv) {
 	int          sock;
 	nla          addr;	
 	int          cnt;
+	struct       sched_param sparm;
+
+	memset(&sparm, 0 , sizeof(sparm));
+	sparm.sched_priority = 2;
+	sched_setscheduler(0, SCHED_RR, &sparm);
 
 	//bootdata();
 	syncline();

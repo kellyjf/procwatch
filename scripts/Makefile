@@ -4,7 +4,7 @@ reset:
 	psql process < process.sql
 
 
-LRU := 172.27.9.18
+LRU := 172.27.9.56
 
 DATA := $(wildcard fdr-* nlproc-*  sardata-* sysinfo-*)
 

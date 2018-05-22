@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <regex.h>
 #include <errno.h>
+#include <sched.h>
 
 int _debug;
 //int _debug = 1;
@@ -200,6 +201,11 @@ int main (int argc, char **argv) {
 	FILE            *fp;
 	int             ndx;
 	char            *filename="/sys/kernel/debug/tracing/trace_pipe";
+	struct       sched_param sparm;
+
+	memset(&sparm, 0 , sizeof(sparm));
+	sparm.sched_priority = 4;
+	sched_setscheduler(0, SCHED_RR, &sparm);
 
 	for(ndx=0; ndx<sizeof(re)/sizeof(re_t); ndx++) {
 		re_t  *elem = re+ndx;

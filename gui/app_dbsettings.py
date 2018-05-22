@@ -46,6 +46,10 @@ class DbSettings(QDialog, Ui_DbSettings):
 			self.passwordLine.setText(password)
 
 		
+	def get(self, key):
+		ret=self.settings.value("db/{}".format(key)).toString()
+		return str(ret)
+
 	def accept(self):
 		self.settings.setValue("db/server", self.serverLine.text())
 		self.settings.setValue("db/port", self.portLine.text())
@@ -79,6 +83,9 @@ class Database(QObject):
 			self.dbsettings.show()
 
 		return self.conn
+
+	def close(self):
+		self.conn.close()
 
 	def execute(self, sql, values=[]):
 		if not self.conn:

@@ -13,6 +13,7 @@ from PyQt4.QtGui import *
 from app_dbsettings import *
 from ui_procwatch import *
 import pytz
+import fload
 
 select="select to_char(mtime,'99999D999') as \"Boot\", etime::time as \"Time\", to_char(pid,'99999') as pid, to_char(ppid,'99999') as ppid, netns, args as \"Command\""
 
@@ -29,6 +30,8 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.connect(self.clearButton, SIGNAL("clicked()"), self.clear)
 		self.connect(self.queryButton, SIGNAL("clicked()"), self.query)
 		self.connect(self.action_Settings, SIGNAL("activated()"), self.dbsettings.show)
+		self.connect(self.action_Init, SIGNAL("activated()"), self.initdb)
+		self.connect(self.action_Load, SIGNAL("activated()"), self.load)
 		self.connect(self.mainTable, SIGNAL("cellDoubleClicked(int, int)"), self.setpid)
 
 		self.metadata()
@@ -42,12 +45,25 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.netnsCombo.insertItems(1,[ "{0} {1:5d}".format(x.get('netns'),x.get('pop')) for x in self.nslist])
 		self.clear()
 
+	def initdb(self):
+		self.db.close()
+		dbname=self.dbsettings.get("database")
+		fload.initdb(dbname)
+		self.db.connect()
+
+	def load(self):
+		dbname=self.dbsettings.get("database")
+		flist=[str(x) for x in QFileDialog.getOpenFileNames()]
+		fload.loadfiles(dbname,flist)
+		self.metadata()
+
 	def clear(self):
-		self.sinceTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
-		self.sinceTime.setDateTime(self.timebox.get('emin'))
-		self.untilTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
-		self.untilTime.setDateTime(self.timebox.get('emax'))
-		self.netnsCombo.setCurrentIndex(0)
+		if self.timebox.get('emin'):
+			self.sinceTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+			self.sinceTime.setDateTime(self.timebox.get('emin'))
+			self.untilTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+			self.untilTime.setDateTime(self.timebox.get('emax'))
+			self.netnsCombo.setCurrentIndex(0)
 		self.filterLine.setText("")
 		self.pidLine.setText("")
 
@@ -85,6 +101,9 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 			
 	def setpid(self, row, col):
 		item=self.mainTable.item(row,0)
+		self.parentTable.clear()
+		self.siblingTable.clear()
+		self.childrenTable.clear()
 		if 'userdata' in item.__dict__:
 			if 'Pid' in item.userdata:
 				pid=int(item.userdata['Pid'])

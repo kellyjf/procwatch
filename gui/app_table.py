@@ -18,13 +18,17 @@ class DbTable(QTableWidget):
                 self.verticalHeader().setVisible(False)
 
 
-	def show(self, cursor):
-		fields=[x[0] for x in cursor.description]
-		self.setSortingEnabled(False)
+	def clear(self):
 		for col in range(self.columnCount()):
 			self.removeColumn(0)
 		for row in range(self.rowCount()):
 			self.removeRow(0)
+		super(type(self),self).clear()
+
+	def show(self, cursor):
+		fields=[x[0] for x in cursor.description]
+		self.clear()
+		self.setSortingEnabled(False)
 		for col,f in enumerate(fields):
 			item=QTableWidgetItem(f)
 			self.insertColumn(col)

@@ -204,12 +204,19 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="action_Load"/>
     <addaction name="action_Settings"/>
     <addaction name="separator"/>
     <addaction name="action_Quit"/>
    </widget>
+   <widget class="QMenu" name="menu_Database">
+    <property name="title">
+     <string>&amp;Database</string>
+    </property>
+    <addaction name="action_Init"/>
+    <addaction name="action_Load"/>
+   </widget>
    <addaction name="menu_File"/>
+   <addaction name="menu_Database"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Quit">
@@ -225,6 +232,11 @@
   <action name="action_Load">
    <property name="text">
     <string>&amp;Load...</string>
+   </property>
+  </action>
+  <action name="action_Init">
+   <property name="text">
+    <string>&amp;Init</string>
    </property>
   </action>
  </widget>
