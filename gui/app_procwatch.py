@@ -38,7 +38,7 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.clear()
 	
 	def metadata(self):
-		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) as emin, max(mtime) as mmax, max(etime) as emax from args")[0]
+		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) at time zone 'UTC'  as emin, max(mtime) as mmax, max(etime) at time zone 'UTC'  as emax from args")[0]
 		self.nslist=self.db.dictlist("select netns, count(netns) as pop  from args group by 1 order by 1")
 		self.netnsCombo.clear()
 		self.netnsCombo.insertItem(0, "")
@@ -59,10 +59,16 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 
 	def clear(self):
 		if self.timebox.get('emin'):
-			self.sinceTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
+			print self.timebox
+
 			self.sinceTime.setDateTime(self.timebox.get('emin'))
-			self.untilTime.setDateTimeRange(self.timebox.get('emin'), self.timebox.get('emax'))
 			self.untilTime.setDateTime(self.timebox.get('emax'))
+
+			self.sinceTime.setMinimumDateTime(self.timebox.get('emin'))
+			self.sinceTime.setMaximumDateTime(self.timebox.get('emax'))
+			self.untilTime.setMinimumDateTime(self.timebox.get('emin'))
+			self.untilTime.setMaximumDateTime(self.timebox.get('emax'))
+
 			self.netnsCombo.setCurrentIndex(0)
 		self.filterLine.setText("")
 		self.pidLine.setText("")

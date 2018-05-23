@@ -16,6 +16,7 @@ def loadfiles(dbname, files):
 	cur=conn.cursor()
 
 	zone=pytz.timezone("America/Denver")
+	zone=pytz.timezone("UTC")
 	eboot = 0
 
 	for dat in files:
@@ -23,7 +24,7 @@ def loadfiles(dbname, files):
 			
 			for num,line in enumerate(f):
 				if num%1000==0:
-					print num,line[:-1]
+					print num,int(eboot),line[:-1]
 				try:
 					if line[-1:]!='\n':
 						continue

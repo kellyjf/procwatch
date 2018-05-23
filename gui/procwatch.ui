@@ -74,16 +74,6 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="1" rowspan="2">
-           <widget class="QTimeEdit" name="sinceTime">
-            <property name="displayFormat">
-             <string>hh:mm:ss</string>
-            </property>
-            <property name="timeSpec">
-             <enum>Qt::LocalTime</enum>
-            </property>
-           </widget>
-          </item>
           <item row="0" column="2">
            <widget class="QSlider" name="sinceSlider">
             <property name="orientation">
@@ -105,13 +95,23 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <widget class="QTimeEdit" name="untilTime">
+          <item row="0" column="1">
+           <widget class="QDateTimeEdit" name="sinceTime">
             <property name="displayFormat">
-             <string>hh:mm:ss</string>
+             <string>M/d hh:mm:ss</string>
             </property>
-            <property name="timeSpec">
-             <enum>Qt::LocalTime</enum>
+            <property name="calendarPopup">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QDateTimeEdit" name="untilTime">
+            <property name="displayFormat">
+             <string>M/d hh:mm:ss</string>
+            </property>
+            <property name="calendarPopup">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -251,8 +251,6 @@
   <tabstop>pidLine</tabstop>
   <tabstop>netnsCombo</tabstop>
   <tabstop>filterLine</tabstop>
-  <tabstop>sinceTime</tabstop>
-  <tabstop>untilTime</tabstop>
   <tabstop>queryButton</tabstop>
   <tabstop>clearButton</tabstop>
   <tabstop>parentTable</tabstop>

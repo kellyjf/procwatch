@@ -81,7 +81,7 @@ create table sgens (
 create view commands as 
 	select 
 		to_char(e.mtime,'999999.999') as "Boot", 
-		to_char(e.etime,'HH24:MI:SS.MS') as "Time",
+		to_char(e.etime at time zone 'UTC' ,'HH24:MI:SS.MS') as "Time",
 		to_char(e.pid,'99999') as "Pid",
 		a.netns as "NetNS",
 		case when a.args is null then e.comm else a.args end as "Command",
@@ -93,7 +93,7 @@ create view commands as
 create view parents as 
 	select 
 		to_char(e.mtime,'999999.999') as "Boot", 
-		to_char(e.etime,'HH24:MI:SS.MS') as "Time",
+		to_char(e.etime at time zone 'UTC' ,'HH24:MI:SS.MS') as "Time",
 		to_char(e.pid,'99999') as "Pid",
 		to_char(e.cpid,'99999') as "Cpid",
 		a.args as "Command",
