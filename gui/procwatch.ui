@@ -148,7 +148,14 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="DbTable" name="mainTable"/>
+       <widget class="DbTable" name="mainTable">
+        <property name="selectionMode">
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior">
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QTabWidget" name="relatedTab">
