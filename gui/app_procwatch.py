@@ -154,9 +154,9 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 						break
 				self.parentTable.show(ancestors)
 
-				self.siblingTable.show(self.db.execute("select \"Boot\", \"Time\", \"Pid\",\"Cpid\",\"Command\" from parents where pid=%s and mtime+10.0>%s order by mtime desc", [ppid,pmtime]))
+				self.siblingTable.show(self.db.execute("select \"Boot\", \"Time\", \"Pid\",\"Cpid\",\"Command\" from children where pid=%s and mtime+10.0>%s order by mtime desc", [ppid,pmtime]))
 
-				self.childrenTable.show(self.db.execute("select \"Boot\", \"Time\", \"Pid\",\"Cpid\",\"Command\" from parents where pid=%s order by mtime", [int(item.userdata['Pid'])]))
+				self.childrenTable.show(self.db.execute("select \"Boot\", \"Time\", \"Pid\",\"Cpid\",\"Command\" from children where pid=%s order by mtime", [int(item.userdata['Pid'])]))
 
 
 if __name__ == "__main__":
