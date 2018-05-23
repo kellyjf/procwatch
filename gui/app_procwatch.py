@@ -33,10 +33,13 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		self.connect(self.action_Init, SIGNAL("activated()"), self.initdb)
 		self.connect(self.action_Load, SIGNAL("activated()"), self.load)
 		self.connect(self.mainTable, SIGNAL("cellDoubleClicked(int, int)"), self.setpid)
-		self.connect(self.parentTable, SIGNAL("cellDoubleClicked(int, int)"), self.parentpid)
+		self.connect(self.childrenTable, SIGNAL("childClicked(int, float)"), self.focuspid)
+		self.connect(self.siblingTable, SIGNAL("childClicked(int, float)"), self.focuspid)
+		self.connect(self.parentTable, SIGNAL("recordClicked(int, float)"), self.focuspid)
 
 		self.metadata()
 		self.clear()
+
 	
 	def metadata(self):
 		self.timebox=self.db.dictlist("select min(mtime) as mmin, min(etime) at time zone 'UTC'  as emin, max(mtime) as mmax, max(etime) at time zone 'UTC'  as emax from args")[0]
@@ -55,6 +58,7 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 	def load(self):
 		dbname=self.dbsettings.get("database")
 		flist=[str(x) for x in QFileDialog.getOpenFileNames()]
+		self.initdb()
 		fload.loadfiles(dbname,flist)
 		self.metadata()
 
@@ -110,19 +114,17 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		sql="select \"Boot\", \"Time\", \"Pid\", \"NetNS\", \"Command\" from commands where abs(mtime-%s)<2 order by mtime"
 		self.mainTable.show(self.db.execute(sql,[float(mtime)]))
 
-	def parentpid(self, row, col):
-		item=self.parentTable.item(row,0)
-		if 'userdata' in item.__dict__:
-			if 'Boot' in item.userdata:
-				self.nearby(item.userdata['Boot'])
-			for row in range(self.mainTable.rowCount()):
-				pitem=self.mainTable.item(row,0)
-				pdata=pitem.userdata
-				if pitem.userdata['Pid']==item.userdata['Pid']:
-					self.mainTable.setCurrentCell(row,0)
-					self.mainTable.setCurrentItem(pitem)
-					self.mainTable.scrollToItem(pitem)
-					break
+	def focuspid(self, pid, mtime):
+		print "FOCUS",pid,mtime
+		self.nearby(mtime)
+		for row in range(self.mainTable.rowCount()):
+			pitem=self.mainTable.item(row,0)
+			pdata=pitem.userdata
+			if int(pitem.userdata['Pid'])==int(pid):
+				self.mainTable.setCurrentCell(row,0)
+				self.mainTable.setCurrentItem(pitem)
+				self.mainTable.scrollToItem(pitem)
+				break
 		
 	def setpid(self, row, col):
 		item=self.mainTable.item(row,0)

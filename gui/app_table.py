@@ -17,6 +17,16 @@ class DbTable(QTableWidget):
                 self.setSelectionBehavior(QAbstractItemView.SelectRows)
                 self.verticalHeader().setVisible(False)
 
+		self.connect(self, SIGNAL("cellDoubleClicked(int,int)"), self.notify)
+
+
+	def notify(self,row,col):
+		curr=self.item(row,0);
+		pid=int(curr.userdata.get('Pid'))
+		cpid=int(curr.userdata.get('Cpid'))
+		mtime=float(curr.userdata.get('Boot'))
+		self.emit(SIGNAL("recordClicked(int,float)"), pid, mtime)
+		self.emit(SIGNAL("childClicked(int,float)"), cpid, mtime)
 
 	def clear(self):
 		for col in range(self.columnCount()):

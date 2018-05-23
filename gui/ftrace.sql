@@ -102,7 +102,7 @@ create view parents as
 		a.args as "Command",
 		e.mtime, e.pid, e.cpid
 	from forks e left join args a
-	on a.pid=e.cpid
+	on a.pid=e.pid
 	and a.mtime= (select mtime from args where pid=e.pid and (e.mtime-mtime)<10 order by mtime limit 1) 
 	order by 1;
 
