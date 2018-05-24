@@ -44,6 +44,8 @@ class DbSettings(QDialog, Ui_DbSettings):
 			self.userLine.setText(user)
 			password=settings.value("db/password", "").toString()
 			self.passwordLine.setText(password)
+			debug,_=settings.value("db/debug", 0).toInt()
+			self.debugCheck.setCheckState(debug)
 
 		
 	def get(self, key):
@@ -56,10 +58,12 @@ class DbSettings(QDialog, Ui_DbSettings):
 		self.settings.setValue("db/database", self.databaseLine.text())
 		self.settings.setValue("db/user", self.userLine.text())
 		self.settings.setValue("db/password", self.passwordLine.text())
+		self.settings.setValue("db/debug", self.debugCheck.checkState())
 		super(type(self),self).accept()	
 
 class Database(QObject):
 	def __init__(self, parent=None):
+		super(type(self),self).__init__()
 		self.settings=QSettings("Gogo, Inc", "procwatch")
 		self.dbsettings=DbSettings(parent, self.settings)
 		
@@ -90,10 +94,17 @@ class Database(QObject):
 	def execute(self, sql, values=[]):
 		if not self.conn:
 			self.connect()
-		curr=self.conn.cursor()
-		print "JFK",curr.mogrify(sql, values)
-		curr.execute(sql, values)
-		return curr
+		try:
+			curr=self.conn.cursor()
+			if self.dbsettings.debugCheck.checkState():
+				print "DEBUG",curr.mogrify(sql, values)
+			curr.execute(sql, values)
+			return curr
+		except pg.OperationalError as exc:
+			self.close()
+			self.connect()
+			return self.execute(sql, values)
+
 
 	def dictlist(self, sql, values=[]):
 		curr=self.execute(sql,values)

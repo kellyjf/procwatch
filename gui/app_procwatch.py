@@ -21,7 +21,6 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 	def __init__(self,parent=None):
 		super(type(self), self).__init__(parent)
 		self.setupUi(self)
-		self.dbsettings=DbSettings(self, QSettings("Gogo, Inc", "procwatch"))
 		self.db=Database()
 		self.db.connect()	
 		self.db.dictlist("set timezone=\"UTC\"")
@@ -29,7 +28,7 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 		
 		self.connect(self.clearButton, SIGNAL("clicked()"), self.clear)
 		self.connect(self.queryButton, SIGNAL("clicked()"), self.query)
-		self.connect(self.action_Settings, SIGNAL("activated()"), self.dbsettings.show)
+		self.connect(self.action_Settings, SIGNAL("activated()"), self.db.dbsettings.show)
 		self.connect(self.action_Init, SIGNAL("activated()"), self.initdb)
 		self.connect(self.action_Load, SIGNAL("activated()"), self.load)
 		self.connect(self.mainTable, SIGNAL("cellDoubleClicked(int, int)"), self.setpid)
@@ -51,12 +50,12 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 
 	def initdb(self):
 		self.db.close()
-		dbname=self.dbsettings.get("database")
+		dbname=self.db.dbsettings.get("database")
 		fload.initdb(dbname)
 		self.db.connect()
 
 	def load(self):
-		dbname=self.dbsettings.get("database")
+		dbname=self.db.dbsettings.get("database")
 		flist=[str(x) for x in QFileDialog.getOpenFileNames()]
 		self.initdb()
 		fload.loadfiles(dbname,flist)
@@ -64,8 +63,6 @@ class Procwatch(QMainWindow, Ui_Procwatch ):
 
 	def clear(self):
 		if self.timebox.get('emin'):
-			print self.timebox
-
 			self.sinceTime.setDateTime(self.timebox.get('emin'))
 			self.untilTime.setDateTime(self.timebox.get('emax'))
 
