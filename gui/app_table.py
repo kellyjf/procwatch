@@ -22,8 +22,8 @@ class DbTable(QTableWidget):
 
 	def notify(self,row,col):
 		curr=self.item(row,0);
-		pid=int(curr.userdata.get('Pid'))
-		cpid=int(curr.userdata.get('Cpid'))
+		pid=int(curr.userdata.get('Pid',0))
+		cpid=int(curr.userdata.get('Cpid',0))
 		mtime=float(curr.userdata.get('Boot'))
 		self.emit(SIGNAL("recordClicked(int,float)"), pid, mtime)
 		self.emit(SIGNAL("childClicked(int,float)"), cpid, mtime)
